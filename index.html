@@ -37,7 +37,7 @@
           </div>
         </div>
         <div class="flex items-center gap-4 text-sm">
-          <span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full">11,000+ Startups</span>
+          <span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full">Loading...</span>
           <button onclick="exportCSV()" class="bg-hub hover:bg-indigo-500 px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition">
             <i class="fa-solid fa-download"></i> Export CSV
           </button>
@@ -104,7 +104,7 @@
         </div>
         <div class="mt-4 flex items-center justify-between">
           <button onclick="resetFilters()" class="text-sm text-slate-500 hover:text-slate-800">Reset filters</button>
-          <div class="text-sm text-slate-500" id="resultText">Showing all startups</div>
+          <div class="text-sm text-slate-500" id="resultText">Loading startups...</div>
         </div>
       </div>
 
@@ -143,135 +143,14 @@
   </div>
 
   <script>
-    // Sample real data scraped from The Hub (expandable)
-    const startups = [
-      {
-        name: "VhAT",
-        description: "VhAT ApS is a Danish legal-tech SaaS company revolutionizing VAT handling. We simplify and automate complex VAT processes using advanced AI and data-driven technologies.",
-        website: "https://vhat.io",
-        location: "Denmark",
-        founded: "2023",
-        employees: "1-10",
-        industries: "SaaS, Legal",
-        businessModel: "B2B",
-        funding: "Seed",
-        hubUrl: "https://thehub.io/startups/vhat",
-        email: "hello@vhat.io",
-        phone: "+45 70 20 30 40",
-        status: "New"
-      },
-      {
-        name: "EasySBC",
-        description: "EasySBC provides analytics and interactive tools to over 1 million EA Sports FC gamers. We empower players to enjoy the game exactly how they want.",
-        website: "https://easysbc.io",
-        location: "Denmark",
-        founded: "2022",
-        employees: "1-10",
-        industries: "IT & Software, SaaS, Gaming",
-        businessModel: "B2C",
-        funding: "Bootstrapping",
-        hubUrl: "https://thehub.io/startups/easysbc",
-        email: "contact@easysbc.io",
-        phone: "",
-        status: "New"
-      },
-      {
-        name: "Too Good To Go",
-        description: "At Too Good To Go we are dedicated to the fight against food waste! Our platform allows people to buy surplus, unsold food from restaurants, cafes, supermarkets.",
-        website: "https://toogoodtogo.com",
-        location: "Denmark, Sweden, Norway",
-        founded: "2015",
-        employees: "200+",
-        industries: "Consumer Goods, Energy & Greentech, Marketplace & eCommerce, Food & Beverage",
-        businessModel: "B2B, Marketplace",
-        funding: "Series B+",
-        hubUrl: "https://thehub.io/startups/too-good-to-go",
-        email: "press@toogoodtogo.com",
-        phone: "",
-        status: "Contacted"
-      },
-      {
-        name: "Pleo Technologies",
-        description: "Looking back at Pleo’s journey, there’s one thing that has stayed the same, and that’s ‘going beyond’. Company spending should be delegated to all employees and teams.",
-        website: "https://pleo.io",
-        location: "Denmark, Sweden",
-        founded: "2015",
-        employees: "200+",
-        industries: "Fintech, IT & Software, SaaS",
-        businessModel: "B2B",
-        funding: "Series B+",
-        hubUrl: "https://thehub.io/startups/pleo",
-        email: "hello@pleo.io",
-        phone: "",
-        status: "Qualified"
-      },
-      {
-        name: "Tiimo",
-        description: "Tiimo is a radical reimagining of what planning can be when it’s designed for brains that don’t fit the mold. ADHD, Autism, executive function challenges? We get it.",
-        website: "https://tiimoapp.com",
-        location: "Denmark",
-        founded: "2015",
-        employees: "11-50",
-        industries: "IT & Software, SaaS",
-        businessModel: "B2C, B2B",
-        funding: "Seed",
-        hubUrl: "https://thehub.io/startups/tiimo",
-        email: "hello@tiimoapp.com",
-        phone: "",
-        status: "New"
-      },
-      {
-        name: "Teton",
-        description: "Teton is a fast-growing and well-funded healthcare startup, with a mission to introduce an intelligent assistant to health professionals around the world.",
-        website: "https://teton.ai",
-        location: "Denmark",
-        founded: "2020",
-        employees: "1-10",
-        industries: "Healthcare & Life Science",
-        businessModel: "B2B, B2G",
-        funding: "Series A",
-        hubUrl: "https://thehub.io/startups/tetonai",
-        email: "info@teton.ai",
-        phone: "+45 31 31 31 31",
-        status: "New"
-      },
-      {
-        name: "Klar",
-        description: "Klar is the first European startup that’s making do-it-yourself home improvement accessible and affordable to anyone.",
-        website: "https://klarhome.com",
-        location: "Denmark, Sweden, Norway",
-        founded: "2018",
-        employees: "50-200",
-        industries: "Consumer Goods, Marketplace & eCommerce, Manufacturing",
-        businessModel: "B2C",
-        funding: "Series A",
-        hubUrl: "https://thehub.io/startups/klarvinduer",
-        email: "hello@klarhome.com",
-        phone: "",
-        status: "New"
-      },
-      {
-        name: "Donkey Republic",
-        description: "Donkey Republic is a publicly listed micro-mobility company headquartered in Copenhagen. We operate bike-sharing systems across Northern Europe.",
-        website: "https://donkey.bike",
-        location: "Denmark",
-        founded: "2015",
-        employees: "50-200",
-        industries: "IT & Software, Maritime & Transport, Travel & Tourism",
-        businessModel: "B2B, B2C",
-        funding: "Public",
-        hubUrl: "https://thehub.io/startups/donkey-republic",
-        email: "info@donkey.bike",
-        phone: "",
-        status: "New"
-      }
-    ];
-
-    let filtered = [...startups];
+    let startups = [];
+    let filtered = [];
 
     function init() {
       const industries = new Set();
-      startups.forEach(s => s.industries.split(',').forEach(i => industries.add(i.trim())));
+      startups.forEach(s => {
+        if (s.industries) s.industries.split(',').forEach(i => industries.add(i.trim()));
+      });
       const industrySelect = document.getElementById('industryFilter');
       [...industries].sort().forEach(ind => {
         const opt = document.createElement('option');
@@ -281,8 +160,10 @@
       });
 
       document.getElementById('totalCount').textContent = startups.length;
+      const badge = document.querySelector('header .bg-emerald-500\/20');
+      if (badge) badge.textContent = startups.length + ' Startups Loaded';
       document.getElementById('withWebsite').textContent = startups.filter(s => s.website).length;
-      document.getElementById('fundingCount').textContent = startups.filter(s => s.funding.includes('Series') || s.funding === 'Public').length;
+      document.getElementById('fundingCount').textContent = startups.filter(s => s.funding && (s.funding.includes('Series') || s.funding === 'Public')).length;
 
       renderTable();
     }
@@ -293,23 +174,23 @@
         <tr class="table-row border-b border-slate-100">
           <td class="px-6 py-4">
             <div class="font-semibold">${s.name}</div>
-            <div class="text-xs text-slate-500 truncate max-w-xs">${s.description.substring(0, 80)}...</div>
+            <div class="text-xs text-slate-500 truncate max-w-xs">${(s.description || '').substring(0, 80)}...</div>
           </td>
           <td class="px-4 py-4">
             <div class="flex flex-wrap gap-1">
-              ${s.industries.split(',').slice(0,2).map(i => `<span class="bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-full">${i.trim()}</span>`).join('')}
+              ${(s.industries || '').split(',').slice(0,2).map(i => `<span class="bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-full">${i.trim()}</span>`).join('')}
             </div>
           </td>
-          <td class="px-4 py-4 text-slate-600">${s.location}</td>
-          <td class="px-4 py-4">${s.employees}</td>
+          <td class="px-4 py-4 text-slate-600">${s.location || ''}</td>
+          <td class="px-4 py-4">${s.employees || ''}</td>
           <td class="px-4 py-4">
-            <span class="px-2 py-1 rounded-full text-xs font-medium ${getFundingColor(s.funding)}">${s.funding}</span>
+            <span class="px-2 py-1 rounded-full text-xs font-medium ${getFundingColor(s.funding)}">${s.funding || ''}</span>
           </td>
           <td class="px-4 py-4">
             ${s.website ? `<a href="${s.website}" target="_blank" class="text-hub hover:underline text-xs">${s.website.replace('https://','')}</a>` : '—'}
           </td>
           <td class="px-4 py-4">
-            <span class="px-2 py-1 rounded-full text-xs ${getStatusColor(s.status)}">${s.status}</span>
+            <span class="px-2 py-1 rounded-full text-xs ${getStatusColor(s.status)}">${s.status || ''}</span>
           </td>
           <td class="px-4 py-4">
             <button onclick="openModal('${s.name}')" class="text-hub hover:text-indigo-700 text-sm font-medium">View</button>
@@ -322,6 +203,7 @@
     }
 
     function getFundingColor(f) {
+      if (!f) return 'bg-slate-100 text-slate-700';
       if (f.includes('Series B')) return 'bg-purple-100 text-purple-800';
       if (f.includes('Series A')) return 'bg-blue-100 text-blue-800';
       if (f === 'Seed') return 'bg-emerald-100 text-emerald-800';
@@ -341,10 +223,10 @@
       const country = document.getElementById('countryFilter').value;
 
       filtered = startups.filter(s => {
-        const matchSearch = !q || s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q) || s.industries.toLowerCase().includes(q);
-        const matchIndustry = !industry || s.industries.includes(industry);
+        const matchSearch = !q || (s.name && s.name.toLowerCase().includes(q)) || (s.description && s.description.toLowerCase().includes(q)) || (s.industries && s.industries.toLowerCase().includes(q));
+        const matchIndustry = !industry || (s.industries && s.industries.includes(industry));
         const matchFunding = !funding || s.funding === funding;
-        const matchCountry = !country || s.location.includes(country);
+        const matchCountry = !country || (s.location && s.location.includes(country));
         return matchSearch && matchIndustry && matchFunding && matchCountry;
       });
       renderTable();
@@ -364,21 +246,21 @@
       document.getElementById('modalTitle').textContent = s.name;
       document.getElementById('modalContent').innerHTML = `
         <div class="space-y-4">
-          <p class="text-slate-700 leading-relaxed">${s.description}</p>
+          <p class="text-slate-700 leading-relaxed">${s.description || ''}</p>
           <div class="grid grid-cols-2 gap-4 text-sm">
-            <div><span class="text-slate-500">Website:</span> <a href="${s.website}" class="text-hub" target="_blank">${s.website}</a></div>
+            <div><span class="text-slate-500">Website:</span> <a href="${s.website}" class="text-hub" target="_blank">${s.website || ''}</a></div>
             <div><span class="text-slate-500">Email:</span> ${s.email || '—'}</div>
             <div><span class="text-slate-500">Phone:</span> ${s.phone || '—'}</div>
-            <div><span class="text-slate-500">Founded:</span> ${s.founded}</div>
-            <div><span class="text-slate-500">Employees:</span> ${s.employees}</div>
-            <div><span class="text-slate-500">Funding:</span> ${s.funding}</div>
-            <div><span class="text-slate-500">Business model:</span> ${s.businessModel}</div>
-            <div><span class="text-slate-500">Location:</span> ${s.location}</div>
+            <div><span class="text-slate-500">Founded:</span> ${s.founded || ''}</div>
+            <div><span class="text-slate-500">Employees:</span> ${s.employees || ''}</div>
+            <div><span class="text-slate-500">Funding:</span> ${s.funding || ''}</div>
+            <div><span class="text-slate-500">Business model:</span> ${s.businessModel || ''}</div>
+            <div><span class="text-slate-500">Location:</span> ${s.location || ''}</div>
           </div>
           <div>
             <span class="text-slate-500 text-sm">Industries:</span>
             <div class="flex flex-wrap gap-2 mt-1">
-              ${s.industries.split(',').map(i => `<span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs">${i.trim()}</span>`).join('')}
+              ${(s.industries || '').split(',').map(i => `<span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs">${i.trim()}</span>`).join('')}
             </div>
           </div>
           <div class="flex gap-3 pt-4">
@@ -399,7 +281,7 @@
     function exportCSV() {
       const headers = ['Name','Description','Website','Email','Phone','Location','Founded','Employees','Industries','Business Model','Funding','Hub URL','Status'];
       const rows = filtered.map(s => [
-        s.name, `"${s.description.replace(/"/g,'""')}"`, s.website, s.email, s.phone, s.location, s.founded, s.employees, `"${s.industries}"`, s.businessModel, s.funding, s.hubUrl, s.status
+        s.name, `"${(s.description || '').replace(/"/g,'""')}"`, s.website, s.email, s.phone, s.location, s.founded, s.employees, `"${s.industries || ''}"`, s.businessModel, s.funding, s.hubUrl, s.status
       ]);
       const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
@@ -411,7 +293,19 @@
       URL.revokeObjectURL(url);
     }
 
-    init();
+    async function loadData() {
+      try {
+        const res = await fetch('data.json');
+        if (!res.ok) throw new Error('Failed to fetch data.json: ' + res.status);
+        startups = await res.json();
+        filtered = [...startups];
+        init();
+      } catch(e) {
+        console.error(e);
+        document.getElementById('resultText').textContent = 'Failed to load data: ' + e.message;
+      }
+    }
+    loadData();
   </script>
 </body>
 </html>
